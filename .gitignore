@@ -1,0 +1,15 @@
+# virtuelle Umgebung
+venv/
+
+# Bytecode-Cache
+__pycache__/
+*.pyc
+
+# SQLite Datenbank (falls lokal)
+*.db
+
+# Umgebungsvariablen
+.env
+
+# Sonstiges
+*.log
