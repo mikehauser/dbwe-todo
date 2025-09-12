@@ -1,14 +1,37 @@
 <!doctype html>
-<html>
-  <head><title>Registrieren</title></head>
-  <body>
-    <h1>Registrieren</h1>
-    <form method="post" action="/register">
-      <label>Benutzername:<br><input name="username" required></label><br><br>
-      <label>E-Mail:<br><input type="email" name="email" required></label><br><br>
-      <label>Passwort:<br><input type="password" name="password" required></label><br><br>
-      <button type="submit">Konto erstellen</button>
-    </form>
-    <p><a href="/">Zur Startseite</a></p>
-  </body>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrieren</title>
+    <!-- Bootstrap CSS einbinden -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+    <div class="container" style="max-width: 400px;">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4 mb-4 text-center">Registrieren</h1>
+                <form method="post" action="/register">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Benutzername</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-Mail</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Passwort</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Konto erstellen</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="/login" class="text-decoration-none">Bereits ein Konto? Anmelden</a><br>
+                    <a href="/" class="text-decoration-none">Zur Startseite</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

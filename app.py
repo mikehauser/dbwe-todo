@@ -62,6 +62,17 @@ class FocusSession(db.Model):
     minutes = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+# --- Task Modell ---
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    done = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", backref=db.backref("tasks", lazy=True))
+
 # --- Route ---
 @app.route("/")
 def home():
@@ -114,6 +125,43 @@ def logout():
 @login_required
 def dashboard():
     return f"Hallo, {current_user.username}!"
+
+@app.route("/tasks", methods=["GET", "POST"])
+@login_required
+def tasks():
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        if not title:
+            return "Titel darf nicht leer sein.", 400
+        t = Task(title=title, description=description, user=current_user)
+        db.session.add(t)
+        db.session.commit()
+        return redirect(url_for("tasks"))
+
+    user_tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return render_template("tasks.html", tasks=user_tasks)
+
+@app.route("/tasks/<int:task_id>/done")
+@login_required
+def task_done(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        return "Nicht erlaubt!", 403
+    task.done = True
+    db.session.commit()
+    return redirect(url_for("tasks"))
+
+@app.route("/tasks/<int:task_id>/delete")
+@login_required
+def task_delete(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        return "Nicht erlaubt!", 403
+    db.session.delete(task)
+    db.session.commit()
+    return redirect(url_for("tasks"))
+
 
 @app.route("/token", methods=["GET", "POST"])
 @login_required
