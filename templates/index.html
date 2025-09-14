@@ -1,12 +1,57 @@
-<!doctype html>
-<html>
-  <head>
-    <title>DBWE Projekt</title>
-    <!-- Bootstrap CSS einbinden -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-  </head>
-  <body>
-    <h1>Willkommen zu meiner Praxisarbeit! 🎯</h1>
-    <p>Dies ist ein </p>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Willkommen{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="mb-4">Willkommen zu meiner Praxisarbeit 🎓</h1>
+        <p class="lead text-muted">
+            Diese Webanwendung demonstriert die Umsetzung einer ToDo-App mit
+            Benutzerverwaltung, Aufgabenmanagement und API-Zugriff.
+        </p>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">📋 Aufgaben verwalten</h5>
+                    <p class="card-text">Lege neue Aufgaben an, markiere sie als erledigt oder lösche sie.</p>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('tasks') }}" class="btn btn-primary">Zu den Aufgaben</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary">Jetzt anmelden</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">👤 Benutzerkonto</h5>
+                    <p class="card-text">Registriere ein neues Konto oder melde dich an, um deine Aufgaben zu speichern.</p>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Abmelden</a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-success">Registrieren</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">🔑 API Zugriff</h5>
+                    <p class="card-text">Erstelle einen API-Token und greife programmgesteuert auf deine Daten zu.</p>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('token_page') }}" class="btn btn-outline-primary">API-Token verwalten</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">Login erforderlich</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

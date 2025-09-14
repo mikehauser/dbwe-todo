@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Willkommen, {{ current_user.username }} 👋</h1>
+
+    <div class="row">
+        <!-- Offene Tasks -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-warning shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Offene Tasks</h5>
+                    <p class="card-text display-6">{{ open_tasks }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Erledigte Tasks -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Erledigte Tasks</h5>
+                    <p class="card-text display-6">{{ done_tasks }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alle Tasks -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Gesamt</h5>
+                    <p class="card-text display-6">{{ total_tasks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Token -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header">API Token</div>
+        <div class="card-body">
+            {% if token %}
+                <p><strong>Dein API-Token:</strong></p>
+                <code>{{ token }}</code>
+                <form method="post" action="{{ url_for('token_page') }}" class="mt-3">
+                    <button type="submit" class="btn btn-outline-primary">Neuen Token generieren</button>
+                </form>
+            {% else %}
+                <p class="text-muted">Noch kein API-Token vorhanden.</p>
+                <a href="{{ url_for('token_page') }}" class="btn btn-primary">Jetzt generieren</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Direktlink -->
+    <div class="mt-4">
+        <a href="{{ url_for('tasks') }}" class="btn btn-lg btn-primary">➡ Zur Aufgabenliste</a>
+    </div>
+{% endblock %}

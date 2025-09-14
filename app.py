@@ -124,7 +124,19 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return f"Hallo, {current_user.username}!"
+    total_tasks = Task.query.filter_by(user_id=current_user.id).count()
+    open_tasks = Task.query.filter_by(user_id=current_user.id, done=False).count()
+    done_tasks = Task.query.filter_by(user_id=current_user.id, done=True).count()
+
+    t = APIToken.query.filter_by(user_id=current_user.id).first()
+
+    return render_template(
+        "dashboard.html",
+        total_tasks=total_tasks,
+        open_tasks=open_tasks,
+        done_tasks=done_tasks,
+        token=t.token if t else None
+    )
 
 @app.route("/tasks", methods=["GET", "POST"])
 @login_required
