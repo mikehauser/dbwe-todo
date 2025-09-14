@@ -215,6 +215,74 @@ def api_sessions():
     db.session.commit()
     return jsonify({"id": fs.id, "label": fs.label, "minutes": fs.minutes, "created_at": fs.created_at.isoformat()}), 201
 
+@app.route("/api/tasks", methods=["GET", "POST"])
+def api_tasks():
+    user = api_user_from_request()
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    if request.method == "GET":
+        rows = Task.query.filter_by(user_id=user.id).order_by(Task.created_at.desc()).all()
+        return jsonify([{
+            "id": t.id,
+            "title": t.title,
+            "description": t.description,
+            "done": t.done,
+            "created_at": t.created_at.isoformat()
+        } for t in rows])
+
+    # POST = neuen Task anlegen
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()
+    description = (data.get("description") or "").strip()
+    if not title:
+        return jsonify({"error": "title required"}), 400
+
+    task = Task(title=title, description=description, user_id=user.id)
+    db.session.add(task)
+    db.session.commit()
+    return jsonify({
+        "id": task.id,
+        "title": task.title,
+        "description": task.description,
+        "done": task.done,
+        "created_at": task.created_at.isoformat()
+    }), 201
+
+
+@app.route("/api/tasks/<int:task_id>", methods=["PUT", "PATCH", "DELETE"])
+def api_task_detail(task_id):
+    user = api_user_from_request()
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != user.id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    if request.method in ["PUT", "PATCH"]:
+        data = request.get_json(silent=True) or {}
+        if "title" in data:
+            task.title = data["title"].strip()
+        if "description" in data:
+            task.description = data["description"].strip()
+        if "done" in data:
+            task.done = bool(data["done"])
+        db.session.commit()
+        return jsonify({
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "done": task.done,
+            "created_at": task.created_at.isoformat()
+        })
+
+    if request.method == "DELETE":
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify({"message": "deleted"})
+
+
 # --- Main ---
 if __name__ == "__main__":
     with app.app_context():
