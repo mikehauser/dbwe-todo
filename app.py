@@ -1,17 +1,9 @@
-import os
-
-from flask import Flask, render_template, request, redirect, url_for
-from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-import os, secrets
+import os, time, secrets
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-
 
 # --- Pfade vorbereiten ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -19,10 +11,14 @@ DB_DIR = os.path.join(BASE_DIR, "instance")
 os.makedirs(DB_DIR, exist_ok=True)
 DB_PATH = os.path.join(DB_DIR, "app.db")
 
+# --- Zeitzone ---
+os.environ['TZ'] = 'Europe/Zurich'
+time.tzset()
+
 # --- App konfigurieren ---
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "change-this-in-prod"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + DB_PATH.replace("\\", "/")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -33,6 +29,7 @@ login_manager.login_view = "login"
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 
 # --- User Modell ---
